@@ -167,7 +167,7 @@ private:
     LOG_DEBUG("Pipeline producer ended! <%s>", name_.c_str());
     consumer_.stopConsumer();
     running_ = false;
-    notifier_.stopped(name_);
+//    notifier_.stopped(name_);
   }
 
   void run_consumer()
@@ -193,7 +193,7 @@ private:
     LOG_DEBUG("Pipeline consumer ended! <%s>", name_.c_str());
     producer_.stopProducer();
     running_ = false;
-    notifier_.stopped(name_);
+//    notifier_.stopped(name_);
   }
 
 public:
@@ -210,7 +210,7 @@ public:
     running_ = true;
     pThread_ = thread(&Pipeline::run_producer, this);
     cThread_ = thread(&Pipeline::run_consumer, this);
-    notifier_.started(name_);
+//    notifier_.started(name_);
   }
 
   void stop()
@@ -227,6 +227,6 @@ public:
 
     pThread_.join();
     cThread_.join();
-    notifier_.stopped(name_);
+//    notifier_.stopped(name_);
   }
 };

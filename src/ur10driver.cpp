@@ -7,8 +7,8 @@
 #include <fstream>
 
 #include "ur_modern_driver/pipeline.h"
-#include "ur_modern_driver/ros/lowbandwidth_trajectory_follower.h"
-#include "ur_modern_driver/ros/trajectory_follower.h"
+#include "ur_modern_driver/ur/lowbandwidth_trajectory_follower.h"
+#include "ur_modern_driver/ur/trajectory_follower.h"
 #include "ur_modern_driver/ur/factory.h"
 #include "ur_modern_driver/ur/parser.h"
 #include "ur_modern_driver/ur/producer.h"

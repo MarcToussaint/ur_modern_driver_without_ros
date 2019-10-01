@@ -8,18 +8,18 @@ include_directories(
 )
 
 set(${PROJECT_NAME}_SOURCES
-    src/ros/lowbandwidth_trajectory_follower.cpp
-    src/ros/trajectory_follower.cpp
-    src/tcp_socket.cpp
-    src/ur/commander.cpp
-    src/ur/master_board.cpp
-    src/ur/messages.cpp
-    src/ur/robot_mode.cpp
-    src/ur/rt_state.cpp
-    src/ur/server.cpp
+  src/ur/lowbandwidth_trajectory_follower.cpp
+  src/ur/trajectory_follower.cpp
+  src/tcp_socket.cpp
+  src/ur/commander.cpp
+  src/ur/master_board.cpp
+  src/ur/messages.cpp
+  src/ur/robot_mode.cpp
+  src/ur/rt_state.cpp
+  src/ur/server.cpp
   src/ur/stream.cpp
   src/ur10driver.cpp
- )
+  )
 
 add_executable(ur10test src/test.cpp)
 
@@ -29,6 +29,6 @@ target_link_libraries(ur10test ur10driver)
 
 target_link_libraries(ur10driver
   pthread atomic
-)
+  )
 
 

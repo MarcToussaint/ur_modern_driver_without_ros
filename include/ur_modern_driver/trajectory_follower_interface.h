@@ -1,4 +1,6 @@
 /*
+ * Copyright 2017, 2018 Jarek Potiuk (low bandwidth trajectory follower)
+ *
  * Copyright 2017, 2018 Simon Rasmussen (refactor)
  *
  * Copyright 2015, 2016 Thomas Timm Andersen (original version)
@@ -18,24 +20,13 @@
 
 #pragma once
 
-#include <ros/ros.h>
-#include <string>
+#include "trajectory_point.h"
 
-#include "std_msgs/String.h"
-#include "ur_modern_driver/log.h"
-#include "ur_modern_driver/ros/service_stopper.h"
-#include "ur_modern_driver/ur/commander.h"
-
-class URScriptHandler : public Service
+class TrajectoryFollowerInterface
 {
-private:
-  ros::NodeHandle nh_;
-  URCommander &commander_;
-  ros::Subscriber urscript_sub_;
-  RobotState state_;
-
 public:
-  URScriptHandler(URCommander &commander);
-  void urscriptInterface(const std_msgs::String::ConstPtr &msg);
-  void onRobotStateChange(RobotState state);
+  virtual bool start() = 0;
+  virtual bool execute(std::vector<TrajectoryPoint> &trajectory, std::atomic<bool> &interrupt) = 0;
+  virtual void stop() = 0;
+  virtual ~TrajectoryFollowerInterface(){};
 };
