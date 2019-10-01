@@ -1,7 +1,8 @@
-CMakeCache.txt
-CMakeFiles
-Makefile
-cmake_install.cmake
-install_manifest.txt
+build
 *~
-.idea
+
+.*.config
+.*.creator
+.*.creator.user
+.*.files
+.*.includes

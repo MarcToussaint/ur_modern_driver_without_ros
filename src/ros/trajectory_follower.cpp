@@ -18,7 +18,7 @@
 
 #include "ur_modern_driver/ros/trajectory_follower.h"
 #include <endian.h>
-#include <ros/ros.h>
+//#include <ros/ros.h>
 #include <cmath>
 
 static const int32_t MULT_JOINTSTATE_ = 1000000;
@@ -92,9 +92,9 @@ TrajectoryFollower::TrajectoryFollower(URCommander &commander, std::string &reve
   , servoj_lookahead_time_(0.03)
   , servoj_gain_(300.)
 {
-  ros::param::get("~servoj_time", servoj_time_);
-  ros::param::get("~servoj_lookahead_time", servoj_lookahead_time_);
-  ros::param::get("~servoj_gain", servoj_gain_);
+//  ros::param::get("~servoj_time", servoj_time_);
+//  ros::param::get("~servoj_lookahead_time", servoj_lookahead_time_);
+//  ros::param::get("~servoj_gain", servoj_gain_);
 
   std::string res(POSITION_PROGRAM);
   res.replace(res.find(JOINT_STATE_REPLACE), JOINT_STATE_REPLACE.length(), std::to_string(MULT_JOINTSTATE_));

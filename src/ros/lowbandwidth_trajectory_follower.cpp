@@ -16,7 +16,7 @@
 
 #include "ur_modern_driver/ros/lowbandwidth_trajectory_follower.h"
 #include <endian.h>
-#include <ros/ros.h>
+//#include <ros/ros.h>
 #include <cmath>
 
 static const std::array<double, 6> EMPTY_VALUES = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
@@ -240,6 +240,8 @@ def driveRobotLowBandwidthTrajectory():
         end
         join sending_thread
     end
+
+    textmsg("Starting the program")
     socket_open(REVERSE_IP, REVERSE_PORT, CONNECTION_NAME)
     receiving_thread = run receivingThread()
     join receiving_thread
@@ -262,13 +264,13 @@ LowBandwidthTrajectoryFollower::LowBandwidthTrajectoryFollower(URCommander &comm
   , servoj_lookahead_time_(0.03)
   , max_joint_difference_(0.01)
 {
-  ros::param::get("~time_interval", time_interval_);
-  ros::param::get("~servoj_time", servoj_time_);
-  ros::param::get("~servoj_time_waiting", servoj_time_waiting_);
-  ros::param::get("~max_waiting_time", max_waiting_time_);
-  ros::param::get("~servoj_gain", servoj_gain_);
-  ros::param::get("~servoj_lookahead_time", servoj_lookahead_time_);
-  ros::param::get("~max_joint_difference", max_joint_difference_);
+//  ros::param::get("~time_interval", time_interval_);
+//  ros::param::get("~servoj_time", servoj_time_);
+//  ros::param::get("~servoj_time_waiting", servoj_time_waiting_);
+//  ros::param::get("~max_waiting_time", max_waiting_time_);
+//  ros::param::get("~servoj_gain", servoj_gain_);
+//  ros::param::get("~servoj_lookahead_time", servoj_lookahead_time_);
+//  ros::param::get("~max_joint_difference", max_joint_difference_);
 
   std::string res(POSITION_PROGRAM);
   std::ostringstream out;

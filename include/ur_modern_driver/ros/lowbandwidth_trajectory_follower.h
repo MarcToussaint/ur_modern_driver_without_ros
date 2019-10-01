@@ -29,7 +29,7 @@
 #include "ur_modern_driver/ur/commander.h"
 #include "ur_modern_driver/ur/server.h"
 
-class LowBandwidthTrajectoryFollower : public ActionTrajectoryFollowerInterface
+class LowBandwidthTrajectoryFollower : public TrajectoryFollowerInterface
 {
 private:
   std::atomic<bool> running_;
