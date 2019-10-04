@@ -1,19 +1,19 @@
-#include <ros/ros.h>
 #include <chrono>
 #include <cstdlib>
 #include <string>
 #include <thread>
 #include <math.h>
 #include <fstream>
+#include <iostream>
 
-#include "ur_modern_driver/pipeline.h"
-#include "ur_modern_driver/ur/lowbandwidth_trajectory_follower.h"
-#include "ur_modern_driver/ur/trajectory_follower.h"
-#include "ur_modern_driver/ur/factory.h"
-#include "ur_modern_driver/ur/parser.h"
-#include "ur_modern_driver/ur/producer.h"
-#include "ur_modern_driver/ur/rt_state.h"
-#include "ur_modern_driver/ur/state.h"
+#include <ur_modern_driver/pipeline.h>
+#include <ur_modern_driver/ur/lowbandwidth_trajectory_follower.h>
+#include <ur_modern_driver/ur/trajectory_follower.h>
+#include <ur_modern_driver/ur/factory.h>
+#include <ur_modern_driver/ur/parser.h>
+#include <ur_modern_driver/ur/producer.h>
+#include <ur_modern_driver/ur/rt_state.h>
+#include <ur_modern_driver/ur/state.h>
 
 #include "ur10driver.h"
 
@@ -43,7 +43,7 @@ public:
     q_real = packet.q_actual;
     qdot_real = packet.qd_actual;
     if(!q_isInitialized){
-      cout <<"** initial q: ";
+      std::cout <<"** initial q: ";
       for( int i=0;i<6;i++) cout <<' ' <<packet.q_actual[i];
       cout <<endl;
     }
@@ -61,7 +61,7 @@ public:
 //=============================================================================
 
 struct UR10Driver_private {
-  std::string host = "10.18.0.12";
+  std::string host;
   int UR_SECONDARY_PORT = 30002;
   int UR_RT_PORT = 30003;
 
@@ -86,7 +86,7 @@ struct UR10Driver_private {
   std::unique_ptr<URCommander> rt_commander;
   std::shared_ptr<TrajectoryFollowerInterface> traj_follower;
 
-  UR10Driver_private();
+  UR10Driver_private(std::string _host);
   ~UR10Driver_private();
 };
 
@@ -99,7 +99,7 @@ std::string getLocalIPAccessibleFromHost(std::string &host, int port) {
 
 //=============================================================================
 
-UR10Driver_private::UR10Driver_private() : factory(host) {
+UR10Driver_private::UR10Driver_private(std::string _host) : host(_host), factory(host) {
 
   std::string local_ip = getLocalIPAccessibleFromHost(host, UR_RT_PORT);
   INotifier *notifier(nullptr);
@@ -126,6 +126,12 @@ UR10Driver_private::UR10Driver_private() : factory(host) {
 
   rt_pl->run();
   state_pl->run();
+
+  // wait for initialization
+  for(;;){
+    if(rt_con.q_isInitialized) break;
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  }
 }
 
 UR10Driver_private::~UR10Driver_private(){
@@ -135,8 +141,8 @@ UR10Driver_private::~UR10Driver_private(){
 
 //=============================================================================
 
-UR10Driver::UR10Driver(){
-  self = make_shared<UR10Driver_private>();
+UR10Driver::UR10Driver(std::string host){
+  self = make_shared<UR10Driver_private>(host);
 }
 
 UR10Driver::~UR10Driver(){
@@ -155,11 +161,11 @@ std::array<double, 6> UR10Driver::get_qdot_now(){
 }
 
 void UR10Driver::executeTrajectory(std::vector<TrajectoryPoint> &trajectory, std::atomic<bool> &interrupt){
-  cout <<"** START" <<endl;
+  std::cout <<"** START" <<endl;
   self->traj_follower->start();
-  cout <<"** EXECUTE" <<endl;
+  std::cout <<"** EXECUTE" <<endl;
   self->traj_follower->execute(trajectory, interrupt);
-  cout <<"** STOP" <<endl;
+  std::cout <<"** STOP" <<endl;
   self->traj_follower->stop();
-  cout <<"** DONE" <<endl;
+  std::cout <<"** DONE" <<endl;
 }

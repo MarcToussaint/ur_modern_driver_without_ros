@@ -22,8 +22,28 @@
 #include <fstream>
 #include <math.h>
 #include <iostream>
-#include <ros/ros.h>
 #include "ur10driver.h"
+
+void minimalMotionToHome(UR10Driver& driver){
+  std::ofstream file("z.qref");
+
+  //-- generate trivial homing trajectory
+
+
+  std::array<double, 6> qhome = {-1, -1.7, -1.3, -1.7, 1.6, 0};
+  std::array<double, 6> q0 = driver.get_q_now();
+  std::array<double, 6> v0;
+  for(uint i=0;i<v0.size();i++) v0[i]=0.;
+
+  std::vector<TrajectoryPoint> trajectory;
+  trajectory.resize(2);
+  trajectory[0] = { q0, v0, std::chrono::microseconds((unsigned long)(0. *1000000.))};
+  trajectory[1] = { qhome, v0, std::chrono::microseconds((unsigned long)(2. *1000000.))};
+
+  std::atomic<bool> interrupt (false);
+  driver.executeTrajectory(trajectory, interrupt);
+}
+
 
 void marcTest(UR10Driver& driver){
   //-- wait for initialization
@@ -37,7 +57,7 @@ void marcTest(UR10Driver& driver){
 
   //-- generate a trajectory
 
-  std::array<double, 6> qhome = {-0.685493, -1.71457, -1.15987, -1.73623, 1.61049, 0.0734876};
+  std::array<double, 6> qhome = {-1, -1.7, -1.3, -1.7, 1.6, 0};
   std::array<double, 6> q0 = driver.get_q_now();
 
   std::array<double, 6> v0;
@@ -77,7 +97,9 @@ void marcTest(UR10Driver& driver){
 
 
 int main(int argc, char **argv){
-  UR10Driver driver;
+
+  UR10Driver driver("10.18.0.12");
+  minimalMotionToHome(driver);
   marcTest(driver);
 
   return EXIT_SUCCESS;

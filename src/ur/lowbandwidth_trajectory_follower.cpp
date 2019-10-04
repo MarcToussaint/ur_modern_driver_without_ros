@@ -251,6 +251,26 @@ end
 
 )";
 
+
+/* ORIGINAL INTERPOLATION
+def interpolate(time_within_segment, total_segment_time, start_pos, l_end_pos, l_start_vel, end_vel):
+    local a = start_pos
+    local b = l_start_vel
+    local c = (-3 * a + 3 * l_end_pos - 2 * total_segment_time * b - total_segment_time * end_vel) / pow(total_segment_time, 2)
+    local d = (2 * a - 2 * l_end_pos + total_segment_time * b + total_segment_time * end_vel) / pow(total_segment_time, 3)
+    return a + b * time_within_segment + c * pow(time_within_segment, 2) + d * pow(time_within_segment, 3)
+end
+*/
+
+/* ALTERNATIVE LINEAR INTERPOLATION:
+    def interpolate(time_within_segment, total_segment_time, start_pos, l_end_pos, l_start_vel, end_vel):
+        local a = start_pos
+        local b = l_end_pos
+        local t = time_within_segment/total_segment_time
+        return (1-t)*a + t*b
+    end
+*/
+
 LowBandwidthTrajectoryFollower::LowBandwidthTrajectoryFollower(URCommander &commander, std::string &reverse_ip,
                                                                int reverse_port, bool version_3)
   : running_(false)
