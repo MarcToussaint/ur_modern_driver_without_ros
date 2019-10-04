@@ -7,7 +7,7 @@ class UR10Driver{
 public:
   std::shared_ptr<struct UR10Driver_private> self;
 
-  UR10Driver();
+  UR10Driver(std::string host);
   ~UR10Driver();
 
   bool isInitialized();

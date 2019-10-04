@@ -33,7 +33,6 @@ class LowBandwidthTrajectoryFollower : public TrajectoryFollowerInterface
 {
 private:
   std::atomic<bool> running_;
-  std::array<double, 6> last_positions_;
   URCommander &commander_;
   URServer server_;
 
