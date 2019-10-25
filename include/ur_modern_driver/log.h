@@ -19,6 +19,9 @@
 #pragma once
 #include <inttypes.h>
 
+#include <mutex>
+#include <fstream>
+
 #ifdef ROS_BUILD
 #include <ros/ros.h>
 
@@ -30,10 +33,29 @@
 
 #else
 
-#define LOG_DEBUG(format, ...) printf("[DEBUG]: " format "\n", ##__VA_ARGS__)
+#define LOG_DEBUG(format, ...) //printf("[DEBUG]: " format "\n", ##__VA_ARGS__)
 #define LOG_WARN(format, ...) printf("[WARNING]: " format "\n", ##__VA_ARGS__)
 #define LOG_INFO(format, ...) printf("[INFO]: " format "\n", ##__VA_ARGS__)
 #define LOG_ERROR(format, ...) printf("[ERROR]: " format "\n", ##__VA_ARGS__)
 #define LOG_FATAL(format, ...) printf("[FATAL]: " format "\n", ##__VA_ARGS__)
 
 #endif
+
+
+struct LogFile{
+  std::mutex mux;
+  std::ofstream file;
+
+  LogFile(const char* filename){
+    file.open(filename);
+  }
+  ~LogFile(){
+    file.close();
+  }
+
+  void lock(){ mux.lock(); }
+  void unlock(){ mux.unlock(); }
+  std::ostream& out(){ return file; }
+
+
+};

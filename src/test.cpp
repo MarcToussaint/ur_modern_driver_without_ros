@@ -67,7 +67,7 @@ void marcTest(UR10Driver& driver){
   uint T=20;
   double duration = .5;
   double L=2;
-  double amplitude = 1.;
+  double amplitude = .5;
   trajectory.resize(T*L+T); //ten tail configurations, to ensure resting
   for(uint t=0;t<trajectory.size();t++){
     std::array<double, 6> q = q0;
@@ -98,7 +98,7 @@ void marcTest(UR10Driver& driver){
 
 int main(int argc, char **argv){
 
-  UR10Driver driver("10.18.0.12");
+  UR10Driver driver("10.18.0.12", true);
   minimalMotionToHome(driver);
   marcTest(driver);
 

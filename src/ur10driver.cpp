@@ -25,14 +25,13 @@ public:
   std::atomic<std::array<double, 6>> q_real;
   std::atomic<std::array<double, 6>> qdot_real;
 
-  std::ofstream file;
+  std::shared_ptr<LogFile> logFile;
   std::chrono::high_resolution_clock::time_point startTime;
 
   UR10Driver_RTdata_Consumer() : q_isInitialized(false) {
-    file.open("z.q");
     startTime = std::chrono::high_resolution_clock::now();
   }
-  ~UR10Driver_RTdata_Consumer() { file.close(); }
+  ~UR10Driver_RTdata_Consumer() {}
 
   virtual bool consume(RTState_V1_6__7& state){ return publish(state); }
   virtual bool consume(RTState_V1_8& state){ return publish(state); }
@@ -50,10 +49,15 @@ public:
     q_isInitialized=true;
 
     auto some_time = std::chrono::high_resolution_clock::now();
-    file <<std::chrono::duration_cast<std::chrono::duration<double>>(some_time-startTime).count();
-    for(int i=0;i<6;i++) file <<' ' <<packet.q_actual[i];
-    for(int i=0;i<6;i++) file <<' ' <<packet.qd_actual[i];
-    file <<endl;
+    if(logFile){
+      logFile->lock();
+      logFile->out() <<"REAL ";
+      logFile->out() <<std::chrono::duration_cast<std::chrono::duration<double>>(some_time-startTime).count();
+      for(int i=0;i<6;i++) logFile->out() <<' ' <<packet.q_actual[i];
+      for(int i=0;i<6;i++) logFile->out() <<' ' <<packet.qd_actual[i];
+      logFile->out() <<endl;
+      logFile->unlock();
+    }
     return true;
   }
 };
@@ -67,6 +71,9 @@ struct UR10Driver_private {
 
   URFactory factory;
   UR10Driver_RTdata_Consumer rt_con;
+
+  // log file
+  std::shared_ptr<LogFile> logFile;
 
   // RT packets consumer (MarcRTConsumer)
   std::unique_ptr<URParser<RTPacket>> rt_parser;
@@ -86,7 +93,7 @@ struct UR10Driver_private {
   std::unique_ptr<URCommander> rt_commander;
   std::shared_ptr<TrajectoryFollowerInterface> traj_follower;
 
-  UR10Driver_private(std::string _host);
+  UR10Driver_private(std::string _host, bool useLogFile);
   ~UR10Driver_private();
 };
 
@@ -99,7 +106,7 @@ std::string getLocalIPAccessibleFromHost(std::string &host, int port) {
 
 //=============================================================================
 
-UR10Driver_private::UR10Driver_private(std::string _host) : host(_host), factory(host) {
+UR10Driver_private::UR10Driver_private(std::string _host, bool useLogFile) : host(_host), factory(host) {
 
   std::string local_ip = getLocalIPAccessibleFromHost(host, UR_RT_PORT);
   INotifier *notifier(nullptr);
@@ -124,6 +131,14 @@ UR10Driver_private::UR10Driver_private(std::string _host) : host(_host), factory
   traj_follower = make_shared<LowBandwidthTrajectoryFollower>(*rt_commander, local_ip, reverse_port, factory.isVersion3());
   //        //traj_follower = new TrajectoryFollower(*rt_commander, local_ip, reverse_port, factory.isVersion3());
 
+  // log file
+  if(useLogFile){
+    logFile = make_shared<LogFile>("z.ur10.log");
+    dynamic_pointer_cast<LowBandwidthTrajectoryFollower>(traj_follower)->logFile = logFile;
+    dynamic_pointer_cast<LowBandwidthTrajectoryFollower>(traj_follower)->launchTime = rt_con.startTime;
+    rt_con.logFile = logFile;
+  }
+
   rt_pl->run();
   state_pl->run();
 
@@ -141,8 +156,8 @@ UR10Driver_private::~UR10Driver_private(){
 
 //=============================================================================
 
-UR10Driver::UR10Driver(std::string host){
-  self = make_shared<UR10Driver_private>(host);
+UR10Driver::UR10Driver(std::string host, bool useLogFile){
+  self = make_shared<UR10Driver_private>(host, useLogFile);
 }
 
 UR10Driver::~UR10Driver(){

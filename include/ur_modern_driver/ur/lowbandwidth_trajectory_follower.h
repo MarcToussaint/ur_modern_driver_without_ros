@@ -45,6 +45,10 @@ private:
                double time_in_seconds);
 
 public:
+  std::shared_ptr<LogFile> logFile;
+  std::chrono::high_resolution_clock::time_point launchTime;
+  std::chrono::high_resolution_clock::time_point startTime;
+
   LowBandwidthTrajectoryFollower(URCommander &commander, std::string &reverse_ip, int reverse_port, bool version_3);
 
   bool start();
