@@ -22,7 +22,6 @@
 #include <fstream>
 #include <math.h>
 #include <iostream>
-#include <ros/ros.h>
 #include "ur10driver.h"
 
 void marcTest(UR10Driver& driver){
