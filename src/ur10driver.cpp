@@ -4,6 +4,7 @@
 #include <thread>
 #include <math.h>
 #include <fstream>
+#include <iostream>
 
 #include "ur_modern_driver/pipeline.h"
 #include "ur_modern_driver/ur/lowbandwidth_trajectory_follower.h"
@@ -154,11 +155,11 @@ std::array<double, 6> UR10Driver::get_qdot_now(){
 }
 
 void UR10Driver::executeTrajectory(std::vector<TrajectoryPoint> &trajectory, std::atomic<bool> &interrupt){
-  cout <<"** START" <<endl;
+  std::cout <<"** START" <<endl;
   self->traj_follower->start();
-  cout <<"** EXECUTE" <<endl;
+  std::cout <<"** EXECUTE" <<endl;
   self->traj_follower->execute(trajectory, interrupt);
-  cout <<"** STOP" <<endl;
+  std::cout <<"** STOP" <<endl;
   self->traj_follower->stop();
-  cout <<"** DONE" <<endl;
+  std::cout <<"** DONE" <<endl;
 }
